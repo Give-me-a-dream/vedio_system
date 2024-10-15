@@ -13,20 +13,54 @@ import java.util.List;
 @Mapper
 public interface CommentDao extends BaseMapper<Comment> {
 
-    //查询一条评论
-    @Select("SELECT t_comments.id,t_comments.`vedio_id` videoId ,t_comments.`comment`,t_comments.time,t_comments.likes,t_comments.unlikes,t_user.`name`FROM t_comments, t_user " +
-            "WHERE t_comments.id = #{id} AND t_comments.user_id = t_user.id")
-    U_Comment selectCommentById(@Param("id") int id);
+    // 查询一条评论
+@Select("""
+    SELECT t_comments.id, 
+           t_comments.vedio_id AS videoId, 
+           t_comments.comment, 
+           t_comments.time, 
+           t_comments.likes, 
+           t_comments.unlikes, 
+           t_user.name
+    FROM t_comments
+    JOIN t_user ON t_comments.user_id = t_user.id
+    WHERE t_comments.id = #{id}
+    """)
+U_Comment selectCommentById(@Param("id") int id);
 
-    //分页查询最热评论
-    @Select("SELECT t_comments.id,t_comments.`vedio_id` videoId,t_comments.`comment`,t_comments.time,t_comments.likes,t_comments.unlikes,t_user.`name`FROM t_comments, t_user " +
-            "WHERE t_comments.vedio_id = #{videoId} AND t_comments.user_id = t_user.id ORDER BY t_comments.likes DESC LIMIT #{limit} OFFSET #{offset}" )
-    List<U_Comment> selectHotComments(@Param("videoId") int videoId, @Param("limit") int limit, @Param("offset") int offset);
+// 分页查询最热评论
+@Select("""
+    SELECT t_comments.id, 
+           t_comments.vedio_id AS videoId, 
+           t_comments.comment, 
+           t_comments.time, 
+           t_comments.likes, 
+           t_comments.unlikes, 
+           t_user.name
+    FROM t_comments
+    JOIN t_user ON t_comments.user_id = t_user.id
+    WHERE t_comments.vedio_id = #{videoId}
+    ORDER BY t_comments.likes DESC
+    LIMIT #{limit} OFFSET #{offset}
+    """)
+List<U_Comment> selectHotComments(@Param("videoId") int videoId, @Param("limit") int limit, @Param("offset") int offset);
 
-    //分页查询最热评论
-    @Select("SELECT t_comments.id,t_comments.`vedio_id` videoId,t_comments.`comment`,t_comments.time,t_comments.likes,t_comments.unlikes,t_user.`name`FROM t_comments, t_user " +
-            "WHERE t_comments.vedio_id = #{videoId} AND t_comments.user_id = t_user.id ORDER BY t_comments.time DESC LIMIT #{limit} OFFSET #{offset}" )
-    List<U_Comment> selectNewComments(@Param("videoId") int videoId, @Param("limit") int limit, @Param("offset") int offset);
+// 分页查询最新评论
+@Select("""
+    SELECT t_comments.id, 
+           t_comments.vedio_id AS videoId, 
+           t_comments.comment, 
+           t_comments.time, 
+           t_comments.likes, 
+           t_comments.unlikes, 
+           t_user.name
+    FROM t_comments
+    JOIN t_user ON t_comments.user_id = t_user.id
+    WHERE t_comments.vedio_id = #{videoId}
+    ORDER BY t_comments.time DESC
+    LIMIT #{limit} OFFSET #{offset}
+    """)
+List<U_Comment> selectNewComments(@Param("videoId") int videoId, @Param("limit") int limit, @Param("offset") int offset);
 
     //查询视频评论数
     @Select("SELECT COUNT(*) FROM t_comments WHERE t_comments.vedio_id = #{videoId}")
